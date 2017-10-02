@@ -14,9 +14,9 @@ The following steps used to Optimize Page Speed index.html:
 #### Part 2: Optimize Frames per Second in pizza.html
 
 To optimize views/pizza.html, I modify views/js/main.js until My frames per second rate is 60 fps or higher as Follow:
-1. In line 501, I solve Forced reflow problem
+1. In line 490, I solve Forced reflow problem
 ~~~~js
-var items = document.querySelectorAll('.mover');
+  var items = document.getElementsByClassName('mover');
   // document.body.scrollTop is no longer supported in Chrome.
     var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
 var itemsLength= items.length;
@@ -25,21 +25,44 @@ var itemsLength= items.length;
     items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
   }
 ~~~~
-2.In line 522, delete "s", "cols" variables (We doesn't need to store value inside variable).
+2.In line 511, The number of background pizzas should be reduced to at least 24 (3 full lines of 8 background pizzas). A better approach is to dynamically calculate the number of pizzas needed to fill the screen, based on browser window resolution.
 ~~~~js
+window.addEventListener('scroll', updatePositions);
+var s = 256;
+  var cols = screen.width / s;
+  var rows = screen.height / s;
+  var total = cols * rows;
+// Generates the sliding pizzas when the page loads.
+/** Outside the loop **/
+var movingPizzas = document.getElementById('movingPizzas1');
 document.addEventListener('DOMContentLoaded', function() {
-  for (var i = 0; i < 200; i++) {
-    var elem = document.createElement('img');
+  for (var i = 0, elem; i < total; i++) {
+     elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
     elem.style.height = "100px";
     elem.style.width = "73.333px";
-    elem.basicLeft = (i % 8) * 256;
-    elem.style.top = (Math.floor(i / 8) * 256) + 'px';
-    document.querySelector("#movingPizzas1").appendChild(elem);
+    elem.basicLeft = (i % cols) * s;
+    elem.style.top = (Math.floor(i / cols) * s) + 'px';
+    movingPizzas.appendChild(elem);
   }
   updatePositions();
 });
+~~~~
+3. Declaring the elem variable (var elem;) in the initialisation of the for-loop will prevent it from being created every time the loop is executed.
+~~~~js
+  for (var i = 0, elem; i < total; i++) {
+     elem = document.createElement('img');
+    //Other statements
+}
+~~~~
+4. The document.getElementById() Web API call is faster. I move this DOM call outside the for statement and save it into a local variable, which can be used here.
+~~~~js
+// Outside the loop 
+var movingPizzas = document.getElementById('movingPizzas1');
+
+//Inside the for statement / loop – this line
+movingPizzas.appendChild(elem);
 ~~~~
   
 
@@ -75,3 +98,14 @@ changeSliderLabel(size);
     }
   }
 ~~~~
+3. I used document.getElementById() Web API call instead document.querySelector().
+4. The document.getElementsByClassName() Web API call instead document.querySelectorAll().
+5. I save the array length, which is part of the condition statement, in a local variable, so the array's length property is not accessed to check its value at each iteration. (i.e. more efficiency)
+6. I declare the "pizzasDiv" variable outside the loop, so only DOM call is made one (Line 457).
+~~~~ js
+var pizzasDiv = document.getElementById("randomPizzas");
+for (var i = 2; i < 100; i++) {
+  pizzasDiv.appendChild(pizzaElementGenerator(i));
+}
+~~~~ 
+
