@@ -429,23 +429,14 @@ var resizePizzas = function(size) {
         console.log("bug in sizeSwitcher");
     }
   }
-   // Returns the size difference to change a pizza element from one size to another. Called by changePizzaSlices(size).
-  /*function determineDx (elem, size) {
-
-    // Changes the slider value to a percent width
-
-    var dx =
-
-    return dx;
-  }*/
-
+  
   // Iterates through pizza elements on the page and changes their widths
   function changePizzaSizes(size) {
     var PizzaContainaer= document.querySelectorAll(".randomPizzaContainer");
     var windowWidth = document.getElementById("randomPizzas").offsetWidth;
       var offsetWidth = PizzaContainaer[0].offsetWidth;
     for (var i = 0; i < PizzaContainaer.length; i++) {
-      var dx = (sizeSwitcher(size) - (offsetWidth / windowWidth)) * windowWidth;;
+      var dx = (sizeSwitcher(size) - (offsetWidth / windowWidth)) * windowWidth;
       var newwidth = (offsetWidth + dx) + 'px';
       PizzaContainaer[i].style.width = newwidth;
     }
@@ -532,3 +523,4 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   updatePositions();
 });
+
